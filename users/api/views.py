@@ -7,7 +7,7 @@ from .serializers import RegistrationSerializer
 from rest_framework.authtoken.views import ObtainAuthToken
 
 
-class CustomLoginView(ObtainAuthToken):
+class LoginView(ObtainAuthToken):
     permission_classes = [AllowAny]
 
     def post(self, request):
