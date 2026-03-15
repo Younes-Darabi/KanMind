@@ -1,7 +1,8 @@
 from django.urls import path
-from .views import BoardView, SingleBoardView
+from users.api.views import RegistrationView, LoginView, EmailCheckView
 
 urlpatterns = [
-    path('', BoardView.as_view(), name='board'),
-    path('<int:pk>', SingleBoardView.as_view(), name='single_board'),
+    path('registration/', RegistrationView.as_view(), name='register'),
+    path('login/', LoginView.as_view(), name='login'),
+    path('email-check/', EmailCheckView.as_view(), name='email_check'),
 ]
