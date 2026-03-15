@@ -1,7 +1,10 @@
-from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import generics
+from boards.api.permissions import IsOwnerOrReadOnly
+from boards.models import Board
+from .serializers import BoardSerializer
 
-class BoardView(APIView):
-    pass
+class BoardListCreateView(generics.ListCreateAPIView):
 
-class SingleBoardView(APIView):
-    pass
+    serializer_class = BoardSerializer
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
