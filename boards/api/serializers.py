@@ -1,6 +1,6 @@
 from rest_framework import serializers
-
 from boards.models import Board
+from tasks.models import Task
 
 
 class BoardSerializer(serializers.ModelSerializer):
@@ -23,7 +23,7 @@ class BoardSerializer(serializers.ModelSerializer):
         return obj.tasks.count()
 
     def get_tasks_to_do_count(self, obj):
-        return obj.tasks.filter(status='to-do').count()
+        return obj.tasks.filter(status=Task.Status.TODO).count()
 
     def get_tasks_high_prio_count(self, obj):
-        return obj.tasks.filter(priority='high').count()
+        return obj.tasks.filter(priority=Task.Priority.HIGH).count()

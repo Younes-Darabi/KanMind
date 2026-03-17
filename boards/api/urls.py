@@ -1,8 +1,9 @@
-from django.urls import path
-from users.api.views import RegistrationView, LoginView, EmailCheckView
+from django.urls import include, path
+from boards.api.views import BoardsView, SingleBoardView
+
 
 urlpatterns = [
-    path('registration/', RegistrationView.as_view(), name='register'),
-    path('login/', LoginView.as_view(), name='login'),
-    path('email-check/', EmailCheckView.as_view(), name='email_check'),
+    path('', BoardsView.as_view(), name='boards_view'),
+    path('<int:pk>/', SingleBoardView.as_view(), name='single_board_view'),
+    path('api-auth/', include('rest_framework.urls'))
 ]
