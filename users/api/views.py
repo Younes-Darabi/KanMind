@@ -5,9 +5,13 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from .serializers import RegistrationSerializer
 from rest_framework.authtoken.views import ObtainAuthToken
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class LoginView(ObtainAuthToken):
+
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -32,6 +36,7 @@ class LoginView(ObtainAuthToken):
 
 
 class RegistrationView(APIView):
+
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -56,4 +61,29 @@ class RegistrationView(APIView):
 
 
 class EmailCheckView(APIView):
+
     permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        email = request.query_params.get('email')
+
+        if not email:
+            return Response(
+                {"detail": "E-Mail-Adresse fehlt."}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            user = User.objects.get(email=email)
+            
+            return Response({
+                "id": user.id,
+                "email": user.email,
+                "fullname": user.fullname
+            }, status=status.HTTP_200_OK)
+
+        except User.DoesNotExist:
+            return Response(
+                {"detail": "Email nicht gefunden."}, 
+                status=status.HTTP_404_NOT_FOUND
+            )

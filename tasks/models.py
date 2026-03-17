@@ -1,5 +1,4 @@
 from django.db import models
-
 from boards.models import Board
 from users.models import User
 
@@ -17,22 +16,29 @@ class Task(models.Model):
         MEDIUM = 'medium', 'Medium'
         HIGH = 'high', 'High'
 
-    board = models.ForeignKey(Board, on_delete=models.CASCADE, related_name='tasks')
+    board = models.ForeignKey(
+        Board, on_delete=models.CASCADE, related_name='tasks')
     title = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
-    status = models.CharField(max_length=20, choices=Status.choices, default=Status.TODO)
-    priority = models.CharField(max_length=20, choices=Priority.choices, default=Priority.MEDIUM)
-    assignee = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_tasks')
-    reviewer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='reviewed_tasks')
+    status = models.CharField(
+        max_length=20, choices=Status.choices, default=Status.TODO)
+    priority = models.CharField(
+        max_length=20, choices=Priority.choices, default=Priority.MEDIUM)
+    assignee = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_tasks')
+    reviewer = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True, related_name='reviewed_tasks')
     due_date = models.DateField()
 
     def __str__(self):
         return self.title
-    
+
 
 class Comment(models.Model):
-    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='comments')
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
+    task = models.ForeignKey(
+        Task, on_delete=models.CASCADE, related_name='comments')
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='comments')
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
