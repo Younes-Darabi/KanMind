@@ -5,9 +5,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from .serializers import RegistrationSerializer
 from rest_framework.authtoken.views import ObtainAuthToken
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
+from users.models import User
 
 
 class LoginView(ObtainAuthToken):

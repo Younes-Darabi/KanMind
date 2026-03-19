@@ -5,7 +5,7 @@ class IsBoardMember(permissions.BasePermission):
 
     def has_permission(self, request, view):
 
-        board_id = view.kwargs.get('board_pk') 
+        board_id = view.kwargs.get('pk') 
 
         try:
             board = Board.objects.get(pk=board_id)
@@ -13,3 +13,5 @@ class IsBoardMember(permissions.BasePermission):
         
         except Board.DoesNotExist:
             return False
+        
+    

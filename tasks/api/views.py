@@ -16,8 +16,8 @@ class TasksView(generics.ListCreateAPIView):
         board_id = self.kwargs.get('board_pk')
         serializer.save(board_id=board_id)
 
-class SingleTaskView(generics.ListCreateAPIView):
+class SingleTaskView(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsBoardMember]
