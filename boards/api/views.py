@@ -1,10 +1,9 @@
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics
-from boards import models
-from boards.api.permissions import IsOwnerOrMember
 from boards.models import Board
-from .serializers import BoardSerializer
+from .serializers import BoardSerializer, SingleBoardSerializer
 from django.db.models import Q
+from .permissions import IsOnlyOwner
 
 class BoardsView(generics.ListCreateAPIView):
 
@@ -25,10 +24,19 @@ class BoardsView(generics.ListCreateAPIView):
 
 class SingleBoardView(generics.RetrieveUpdateDestroyAPIView):
 
-    queryset = Board.objects.all()
-    serializer_class = BoardSerializer
-    permission_classes = [IsAuthenticated, IsOwnerOrMember]
+    serializer_class = SingleBoardSerializer
+    permission_classes = [IsAuthenticated]
+
 
     def get_queryset(self):
+
         user = self.request.user
-        return Board.objects.filter(models.Q(owner=user) | models.Q(members=user)).distinct()
+        return Board.objects.filter(
+            Q(owner=user) | Q(members=user)
+        ).distinct()
+    
+    def get_permissions(self):
+
+        if self.request.method == 'DELETE':
+            return [IsAuthenticated(), IsOnlyOwner()]
+        return [IsAuthenticated()]
