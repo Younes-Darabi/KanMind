@@ -29,6 +29,9 @@ class Task(models.Model):
     reviewer = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, blank=True, related_name='reviewed_tasks')
     due_date = models.DateField()
+    creator = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='created_tasks'
+    )
 
     def __str__(self):
         return self.title
