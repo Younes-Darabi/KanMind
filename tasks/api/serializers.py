@@ -1,6 +1,8 @@
 from rest_framework import serializers
+
 from users.models import User
 from tasks.models import Comment, Task
+
 
 class UserMinSerializer(serializers.ModelSerializer):
 
@@ -8,12 +10,12 @@ class UserMinSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'email', 'fullname']
 
+
 class TaskSerializer(serializers.ModelSerializer):
 
     assignee = UserMinSerializer(read_only=True)
     reviewer = UserMinSerializer(read_only=True)
     
-
     assignee_id = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(), source='assignee', write_only=True, required=False
     )

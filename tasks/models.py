@@ -1,4 +1,5 @@
 from django.db import models
+
 from boards.models import Board
 from users.models import User
 
@@ -38,6 +39,7 @@ class Task(models.Model):
 
 
 class Comment(models.Model):
+
     task = models.ForeignKey(
         Task, on_delete=models.CASCADE, related_name='comments')
     author = models.ForeignKey(

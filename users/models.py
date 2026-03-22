@@ -3,6 +3,7 @@ from django.db import models
 
 
 class UserManager(BaseUserManager):
+    
     def create_user(self, email, fullname, password=None, **extra_fields):
         if not email:
             raise ValueError('The Email field must be set')
@@ -16,7 +17,7 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(email, fullname, password, **extra_fields)
-    
+
 
 class User(AbstractUser):
 

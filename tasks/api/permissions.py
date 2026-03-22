@@ -1,4 +1,5 @@
 from rest_framework import permissions
+
 from boards.models import Board
 from tasks.models import Task
 
@@ -15,6 +16,7 @@ class IsBoardMember(permissions.BasePermission):
         return obj.board.owner == user or obj.board.members.filter(id=user.id).exists()
 
     def has_permission(self, request, view):
+
         user = request.user
         
         task_id = view.kwargs.get('task_id')

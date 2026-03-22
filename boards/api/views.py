@@ -1,15 +1,16 @@
+from django.db.models import Q
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics
+
 from boards.models import Board
-from .serializers import BoardSerializer, SingleBoardSerializer
-from django.db.models import Q
 from .permissions import IsOnlyOwner
+from .serializers import BoardSerializer, SingleBoardSerializer
+
 
 class BoardsView(generics.ListCreateAPIView):
 
     serializer_class = BoardSerializer
     permission_classes = [IsAuthenticated]
-
 
     def get_queryset(self):
         user = self.request.user
@@ -26,7 +27,6 @@ class SingleBoardView(generics.RetrieveUpdateDestroyAPIView):
 
     serializer_class = SingleBoardSerializer
     permission_classes = [IsAuthenticated]
-
 
     def get_queryset(self):
 

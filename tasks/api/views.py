@@ -1,11 +1,12 @@
-from rest_framework import generics
-from tasks.api.serializers import CommentSerializer, TaskSerializer
-from tasks.models import Task, Comment
-from rest_framework.permissions import IsAuthenticated
-from .permissions import IsBoardMember, IsCommentAuthor
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+
+from tasks.api.serializers import CommentSerializer, TaskSerializer
+from tasks.models import Task, Comment
+from .permissions import IsBoardMember, IsCommentAuthor
 
 
 class TasksView(generics.ListCreateAPIView):
@@ -39,7 +40,7 @@ class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
     def delete(self, request, *args, **kwargs):
 
         return super().delete(request, *args, **kwargs)
-    
+
 
 class TaskAssignedToMeListView(generics.ListAPIView):
     
@@ -48,17 +49,18 @@ class TaskAssignedToMeListView(generics.ListAPIView):
 
     def get_queryset(self):
         return Task.objects.filter(assignee=self.request.user)
-    
-    
+
+
 class TaskReviewingListView(generics.ListAPIView):
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Task.objects.filter(reviewer=self.request.user)
-    
+
 
 class CommentListCreateView(generics.ListCreateAPIView):
+
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated, IsBoardMember]
 
@@ -72,6 +74,7 @@ class CommentListCreateView(generics.ListCreateAPIView):
         task = get_object_or_404(Task, id=task_id)
         
         serializer.save(author=self.request.user, task=task)
+
 
 class CommentDetailView(generics.DestroyAPIView):
 

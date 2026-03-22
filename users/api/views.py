@@ -3,9 +3,10 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
-from .serializers import RegistrationSerializer
 from rest_framework.authtoken.views import ObtainAuthToken
+
 from users.models import User
+from .serializers import RegistrationSerializer
 
 
 class LoginView(ObtainAuthToken):

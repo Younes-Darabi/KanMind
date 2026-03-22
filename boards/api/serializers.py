@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from boards.models import Board
 from tasks.models import Task
 from users.models import User
