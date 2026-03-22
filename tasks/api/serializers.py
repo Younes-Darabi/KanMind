@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from users.models import User
-from tasks.models import Task
+from tasks.models import Comment, Task
 
 class UserMinSerializer(serializers.ModelSerializer):
 
@@ -46,3 +46,13 @@ class TaskSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"reviewer_id": "User must be a board member."})
         
         return data
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    
+    author = serializers.ReadOnlyField(source='author.fullname')
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'created_at', 'author', 'content']
+        read_only_fields = ['id', 'created_at', 'author']

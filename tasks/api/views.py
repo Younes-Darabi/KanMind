@@ -1,9 +1,11 @@
 from rest_framework import generics
-from tasks.api.serializers import TaskSerializer
-from tasks.models import Task
+from tasks.api.serializers import CommentSerializer, TaskSerializer
+from tasks.models import Task, Comment
 from rest_framework.permissions import IsAuthenticated
-from .permissions import IsBoardMember
+from .permissions import IsBoardMember, IsCommentAuthor
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
+
 
 
 class TasksView(generics.ListCreateAPIView):
@@ -54,3 +56,33 @@ class TaskReviewingListView(generics.ListAPIView):
 
     def get_queryset(self):
         return Task.objects.filter(reviewer=self.request.user)
+    
+
+class CommentListCreateView(generics.ListCreateAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated, IsBoardMember]
+
+    def get_queryset(self):
+        task_id = self.kwargs.get('task_id')
+
+        return Comment.objects.filter(task_id=task_id).order_by('created_at')
+
+    def perform_create(self, serializer):
+        task_id = self.kwargs.get('task_id')
+        task = get_object_or_404(Task, id=task_id)
+        
+        serializer.save(author=self.request.user, task=task)
+
+class CommentDetailView(generics.DestroyAPIView):
+
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+
+    permission_classes = [IsAuthenticated, IsBoardMember, IsCommentAuthor]
+    lookup_url_kwarg = 'comment_id'
+
+    def get_object(self):
+
+        task_id = self.kwargs.get('task_id')
+        comment_id = self.kwargs.get('comment_id')
+        return get_object_or_404(Comment, id=comment_id, task_id=task_id)
