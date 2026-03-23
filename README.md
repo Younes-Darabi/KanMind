@@ -54,16 +54,20 @@ KanMind is a comprehensive Task Management Backend API built with **Django REST 
    
         source .venv/bin/activate
 
-3. Install Dependencies:
+3. Environment Configuration:
+   Create a `.env` file in the root directory and add your secret key:
+   ```env
+   SECRET_KEY=your_secret_key_here
+
+4. Install Dependencies:
 
         pip install -r requirements.txt
 
-4. Apply Database Migrations:
+5. Apply Database Migrations:
 
-        python manage.py makemigrations
         python manage.py migrate
 
-5. Run the Development Server:
+6. Run the Development Server:
 
         python manage.py runserver
 
