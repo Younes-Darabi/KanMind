@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.authtoken.views import ObtainAuthToken
 
 from users.models import User
-from .serializers import RegistrationSerializer
+from .serializers import CustomAuthTokenSerializer, RegistrationSerializer
 
 
 class LoginView(ObtainAuthToken):
@@ -16,27 +16,22 @@ class LoginView(ObtainAuthToken):
     """
 
     permission_classes = [AllowAny]
-
-    def post(self, request):
-        try:
-            serializer = self.serializer_class(data=request.data)
-            if serializer.is_valid():
-                user = serializer.validated_data['user']
-                token, created = Token.objects.get_or_create(user=user)
-                return Response({
-                    "token": token.key,
-                    "fullname": user.fullname,
-                    "email": user.email,
-                    "user_id": user.id
-                }, status=status.HTTP_201_CREATED)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response(
-                {"error": "Internal Server Error"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-
+    serializer_class = CustomAuthTokenSerializer
+    
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({
+                "token": token.key,
+                "fullname": user.fullname,
+                "email": user.email,
+                "user_id": user.id
+            }, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
 class RegistrationView(APIView):
     """
