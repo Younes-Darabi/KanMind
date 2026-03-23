@@ -10,6 +10,11 @@ from .permissions import IsBoardMember, IsCommentAuthor
 
 
 class TasksView(generics.ListCreateAPIView):
+    """
+    Handles listing and creating tasks.
+    - LIST: Only returns tasks from boards where the user is an owner or member.
+    - CREATE: Automatically sets the logged-in user as the 'creator'.
+    """
 
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated, IsBoardMember]
@@ -25,6 +30,10 @@ class TasksView(generics.ListCreateAPIView):
 
 
 class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Handles retrieving, updating, and deleting a specific task.
+    Access is restricted by IsBoardMember permission.
+    """
 
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
@@ -43,6 +52,7 @@ class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class TaskAssignedToMeListView(generics.ListAPIView):
+    """Returns a list of tasks where the current user is the Assignee."""
     
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
@@ -52,6 +62,8 @@ class TaskAssignedToMeListView(generics.ListAPIView):
 
 
 class TaskReviewingListView(generics.ListAPIView):
+    """Returns a list of tasks where the current user is the Reviewer."""
+
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
 
@@ -60,6 +72,11 @@ class TaskReviewingListView(generics.ListAPIView):
 
 
 class CommentListCreateView(generics.ListCreateAPIView):
+    """
+    Handles listing comments for a specific task and creating new ones.
+    - LIST: Ordered by creation date (oldest first).
+    - CREATE: Automatically links the comment to the task and the current user.
+    """
 
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated, IsBoardMember]
@@ -77,6 +94,10 @@ class CommentListCreateView(generics.ListCreateAPIView):
 
 
 class CommentDetailView(generics.DestroyAPIView):
+    """
+    Handles deleting a comment.
+    Ensures the comment belongs to the specified task and the user has permission.
+    """
 
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer

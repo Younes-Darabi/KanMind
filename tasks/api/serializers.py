@@ -5,6 +5,7 @@ from tasks.models import Comment, Task
 
 
 class UserMinSerializer(serializers.ModelSerializer):
+    """Simple serializer for User basic info."""
 
     class Meta:
         model = User
@@ -12,10 +13,15 @@ class UserMinSerializer(serializers.ModelSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
-
+    """
+    Handles Task serialization with nested user data for display 
+    and primary keys for writing operations.
+    """
+    # For Displaying (Read-only)
     assignee = UserMinSerializer(read_only=True)
     reviewer = UserMinSerializer(read_only=True)
     
+    # For Writing (Write-only) - accepts IDs from frontend
     assignee_id = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(), source='assignee', write_only=True, required=False
     )
@@ -34,6 +40,10 @@ class TaskSerializer(serializers.ModelSerializer):
         ]
 
     def validate(self, data):
+        """
+        Ensures that the assigned user and reviewer are actually 
+        members of the board associated with the task.
+        """
         
         instance = self.instance
         board = data.get('board', instance.board if instance else None)
@@ -51,6 +61,10 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Task comments. 
+    The author is automatically set to the logged-in user in the View.
+    """
     
     author = serializers.ReadOnlyField(source='author.fullname')
 

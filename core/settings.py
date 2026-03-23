@@ -121,6 +121,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# --- Django REST Framework Configuration ---
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
@@ -131,4 +132,6 @@ REST_FRAMEWORK = {
     ]
 }
 
+# --- Custom User Model ---
+# Tells Django to use your custom User model instead of the default one
 AUTH_USER_MODEL = 'users.User'

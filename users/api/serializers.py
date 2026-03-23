@@ -3,6 +3,12 @@ from rest_framework import serializers
 from users.models import User
 
 class RegistrationSerializer(serializers.ModelSerializer):
+    """
+    Serializer for User Registration.
+    - Validates matching passwords.
+    - Ensures email uniqueness.
+    - Uses 'create_user' to securely hash passwords.
+    """
 
     repeated_password = serializers.CharField(write_only=True)
 
@@ -10,11 +16,17 @@ class RegistrationSerializer(serializers.ModelSerializer):
         model = User
         fields = ['fullname', 'email', 'password', 'repeated_password']
         extra_kwargs = {
-            'password': {'write_only': True},
+            'password': {'write_only': True}, # Password is never sent back in JSON
             'email': {'required': True}
         }
 
     def validate(self, attrs):
+        """
+        Custom validation for registration logic.
+        - Checks if passwords match.
+        - Checks if the email is already registered.
+        """
+
         if attrs['password'] != attrs['repeated_password']:
             raise serializers.ValidationError(
                 {"password": "Passwords do not match!"})
@@ -26,8 +38,14 @@ class RegistrationSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
+        """
+        Overriding the create method to handle password hashing 
+        via the custom UserManager.
+        """
+        # Remove the repeated password before passing data to create_user
         validated_data.pop('repeated_password')
 
+        # Create user using the manager to ensure correct hashing
         user = User.objects.create_user(
             email=validated_data['email'],
             fullname=validated_data['fullname'],

@@ -10,6 +10,10 @@ from .serializers import RegistrationSerializer
 
 
 class LoginView(ObtainAuthToken):
+    """
+    Handles user authentication.
+    - POST: Validates credentials and returns a Token along with user details.
+    """
 
     permission_classes = [AllowAny]
 
@@ -35,6 +39,10 @@ class LoginView(ObtainAuthToken):
 
 
 class RegistrationView(APIView):
+    """
+    Handles new user registration.
+    - POST: Creates a new user account and returns an Auth Token.
+    """
 
     permission_classes = [AllowAny]
 
@@ -60,6 +68,10 @@ class RegistrationView(APIView):
 
 
 class EmailCheckView(APIView):
+    """
+    API endpoint to check if an email exists in the system.
+    Useful for validating members before adding them to a board.
+    """
 
     permission_classes = [IsAuthenticated]
     
