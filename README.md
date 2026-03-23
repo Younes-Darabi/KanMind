@@ -1,4 +1,4 @@
-# 📝 KanMind API - Task Management System
+# 📝 KanMind API - Task Management System (Backend)
 
 KanMind is a comprehensive Task Management Backend API built with **Django REST Framework**. It provides a structured way to manage project boards, tasks, and team collaborations with robust permission handlings.
 
@@ -41,7 +41,8 @@ KanMind is a comprehensive Task Management Backend API built with **Django REST 
         git clone https://github.com/Younes-Darabi/KanMind
         cd kan-mind
 
-2. Set up a Virtual Environment:
+
+3. Set up a Virtual Environment:
 
         python -m venv .venv
    
@@ -121,3 +122,16 @@ KanMind is a comprehensive Task Management Backend API built with **Django REST 
 - Board Deletion: Only the Board Owner.
 
 - Comment Deletion: Only the Comment Author.
+
+
+---
+
+## 🔗 Related Projects
+
+This repository serves as the **Backend API** for the KanMind ecosystem. To explore the user interface and frontend implementation, please visit:
+
+* **Frontend Repository:** [https://github.com/Developer-Akademie-Backendkurs/project.KanMind](https://github.com/Developer-Akademie-Backendkurs/project.KanMind)
+
+---
+
+Developed with ❤️ by Younes
