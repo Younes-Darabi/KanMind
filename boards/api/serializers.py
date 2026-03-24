@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from boards.models import Board
+from tasks.api.serializers import TaskSerializer
 from tasks.models import Task
 from users.models import User
 
@@ -60,7 +61,8 @@ class SingleBoardSerializer(serializers.ModelSerializer):
     """
 
     owner_id = serializers.ReadOnlyField(source='owner.id')
-
+    tasks = TaskSerializer(many=True, read_only=True)
+    
     class Meta:
 
         model = Board
@@ -78,3 +80,18 @@ class SingleBoardSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         representation['members'] = UserMinSerializer(instance.members.all(), many=True).data
         return representation
+    
+
+class BoardPatchSerializer(serializers.ModelSerializer):
+
+    owner_data = UserMinSerializer(source='owner', read_only=True)
+    members_data = UserMinSerializer(source='members', many=True, read_only=True)
+
+    class Meta:
+
+        model = Board
+        fields = ['id', 'title', 'owner_data', 'members', 'members_data']
+        extra_kwargs = {
+            'members': {'write_only': True, 'required': False},
+            'title': {'required': False}
+        }

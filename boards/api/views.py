@@ -4,7 +4,7 @@ from rest_framework import generics
 
 from boards.models import Board
 from .permissions import IsOnlyOwner
-from .serializers import BoardSerializer, SingleBoardSerializer
+from .serializers import BoardSerializer, SingleBoardSerializer, BoardPatchSerializer
 
 
 class BoardsView(generics.ListCreateAPIView):
@@ -45,8 +45,14 @@ class SingleBoardView(generics.RetrieveUpdateDestroyAPIView):
     but only the owner can delete the board.
     """
 
-    serializer_class = SingleBoardSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+
+        if self.request.method in ['PATCH']:
+            return BoardPatchSerializer
+        
+        return SingleBoardSerializer
 
     def get_queryset(self):
         """

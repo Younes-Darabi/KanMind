@@ -1,58 +1,49 @@
 from rest_framework import permissions
+from django.db.models import Q
 
 from boards.models import Board
 from tasks.models import Task
 
 
 class IsBoardMember(permissions.BasePermission):
-    """
-    Custom permission to ensure only board members or owners 
-    can interact with tasks within that board.
-    """
+    def has_permission(self, request, view):
+        user = request.user
+        if not user.is_authenticated:
+            return False
+
+        if request.method in ['GET', 'PATCH', 'DELETE'] and ('pk' in view.kwargs or 'comment_id' in view.kwargs):
+            return True
+
+        if request.method == 'POST':
+
+            board_id = request.data.get('board')
+            if board_id:
+                return Board.objects.filter(id=board_id).filter(
+                    Q(owner=user) | Q(members=user)
+                ).exists()
+
+            task_id = view.kwargs.get('task_id')
+            if task_id:
+                try:
+                    task = Task.objects.get(pk=task_id)
+                    return task.board.owner == user or task.board.members.filter(id=user.id).exists()
+                except Task.DoesNotExist:
+                    return False
+
+        return True
 
     def has_object_permission(self, request, view, obj):
-        """
-        Object-level permission check:
-        - DELETE: Only Task Creator or Board Owner can delete a task.
-        - OTHER: Any board member can view/edit.
-        """
-
         user = request.user
         
-        if request.method == 'DELETE':
-            # Strict rule: Only the one who made the task or the boss (Board Owner)
-            return obj.creator == user or obj.board.owner == user
+        if hasattr(obj, 'board'):
+            board = obj.board
+        else:
+            board = obj.task.board
+
+        if request.method == 'DELETE' and hasattr(obj, 'creator'):
+            return obj.creator == user or board.owner == user
         
-        # General Access: Must be the owner or a team member
-        return obj.board.owner == user or obj.board.members.filter(id=user.id).exists()
-
-    def has_permission(self, request, view):
-        """
-        Global permission check: 
-        Ensures the user belongs to the board before they can even 
-        try to access or create tasks.
-        """
-
-        user = request.user
-
-        # Scenario 1: Accessing a specific task via URL (e.g., for comments)
-        task_id = view.kwargs.get('task_id')
-        if task_id:
-            try:
-                task = Task.objects.get(pk=task_id)
-                board = task.board
-                return board.owner == user or board.members.filter(id=user.id).exists()
-            except Task.DoesNotExist:
-                return False
-
-        # Scenario 2: Creating a new task (Board ID is in the request body)
-        board_id = request.data.get('board')
-        if board_id:
-            try:
-                board = Board.objects.get(pk=board_id)
-                return board.owner == user or board.members.filter(id=user.id).exists()
-            except Board.DoesNotExist:
-                return False
+        return board.owner == user or board.members.filter(id=user.id).exists()
 
 
 class IsCommentAuthor(permissions.BasePermission):
