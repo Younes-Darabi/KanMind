@@ -17,7 +17,11 @@ class CreateAccountTests(APITestCase):
         }  
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
+        self.assertEqual(response.data['fullname'], data['fullname'])
+        self.assertEqual(response.data['email'], data['email'])
+        self.assertIn('token', response.data)
+        self.assertIn('user_id', response.data)
+        
     def test_create_account_400(self):
         url = reverse('register')
         data = {
@@ -47,6 +51,10 @@ class LoginTests(APITestCase):
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['email'], data['email'])
+        self.assertIn('fullname', response.data)
+        self.assertIn('token', response.data)
+        self.assertIn('user_id', response.data)
 
     def test_login_400(self):
         url = reverse('login')
