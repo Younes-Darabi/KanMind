@@ -59,7 +59,7 @@ class EmailCheckView(APIView):
         email = request.query_params.get('email')
         if not email:
             return Response(
-                {"detail": "E-Mail-Adresse fehlt."}, 
+                {"detail": "Email field is missing."}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
         try:
@@ -71,6 +71,6 @@ class EmailCheckView(APIView):
             }, status=status.HTTP_200_OK)
         except User.DoesNotExist:
             return Response(
-                {"detail": "Email nicht gefunden."}, 
+                {"detail": "Email not found."}, 
                 status=status.HTTP_404_NOT_FOUND
             )
