@@ -10,11 +10,6 @@ from .serializers import CustomAuthTokenSerializer, RegistrationSerializer
 
 
 class LoginView(ObtainAuthToken):
-    """
-    Handles user authentication.
-    - POST: Validates credentials and returns a Token along with user details.
-    """
-
     permission_classes = [AllowAny]
     serializer_class = CustomAuthTokenSerializer
     
@@ -34,11 +29,6 @@ class LoginView(ObtainAuthToken):
     
 
 class RegistrationView(APIView):
-    """
-    Handles new user registration.
-    - POST: Creates a new user account and returns an Auth Token.
-    """
-
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -63,31 +53,22 @@ class RegistrationView(APIView):
 
 
 class EmailCheckView(APIView):
-    """
-    API endpoint to check if an email exists in the system.
-    Useful for validating members before adding them to a board.
-    """
-
     permission_classes = [IsAuthenticated]
     
     def get(self, request):
         email = request.query_params.get('email')
-
         if not email:
             return Response(
                 {"detail": "E-Mail-Adresse fehlt."}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
         try:
             user = User.objects.get(email=email)
-            
             return Response({
                 "id": user.id,
                 "email": user.email,
                 "fullname": user.fullname
             }, status=status.HTTP_200_OK)
-
         except User.DoesNotExist:
             return Response(
                 {"detail": "Email nicht gefunden."}, 
