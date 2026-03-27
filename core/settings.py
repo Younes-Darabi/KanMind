@@ -41,8 +41,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Third-party packages
     'rest_framework',
     'rest_framework.authtoken',
+    
+    # Local apps (Created for this project)
     'users',
     'boards',
     'tasks'
@@ -125,17 +129,21 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-# --- Django REST Framework Configuration ---
+# Django REST Framework Configuration
+# ------------------------------------------------------------------------------
 REST_FRAMEWORK = {
+    # Define how users are authenticated (Token for Mobile/React, Session for Browsable API)
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
+    # Set default permission to require authentication for all API views
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ]
 }
 
-# --- Custom User Model ---
-# Tells Django to use your custom User model instead of the default one
+# Custom User Model Configuration
+# ------------------------------------------------------------------------------
+# Informs Django that we are using a custom User model (email-based) instead of the default
 AUTH_USER_MODEL = 'users.User'
