@@ -18,11 +18,11 @@ class TaskSerializer(serializers.ModelSerializer):
     Main serializer for Task management.
     Includes logic for read-only nested objects and write-only ID fields.
     """
-    # Read-only fields to show full user details in GET requests
+    """Read-only fields to show full user details in GET requests"""
     assignee = UserMinSerializer(read_only=True)
     reviewer = UserMinSerializer(read_only=True)
     
-    # Write-only fields to accept IDs when creating or updating
+    """Write-only fields to accept IDs when creating or updating"""
     assignee_id = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(), source='assignee', write_only=True, required=False, allow_null=True
     )
@@ -30,10 +30,10 @@ class TaskSerializer(serializers.ModelSerializer):
         queryset=User.objects.all(), source='reviewer', write_only=True, required=False, allow_null=True
     )
     
-    # Dynamically calculate the number of comments for each task
+    """Dynamically calculate the number of comments for each task"""
     comments_count = serializers.SerializerMethodField()
     
-    # Required field to link task to a board
+    """Required field to link task to a board"""
     board = serializers.PrimaryKeyRelatedField(queryset=Board.objects.all(), required=True)
 
     class Meta:
@@ -52,18 +52,18 @@ class TaskSerializer(serializers.ModelSerializer):
         """
         Custom validation logic for strict API requirements.
         """
-        # 1. Strict Validation: Reject any fields not defined in the serializer
+        """1. Strict Validation: Reject any fields not defined in the serializer"""
         input_keys = set(self.initial_data.keys())
         allowed_keys = set(self.fields.keys())
         extra_keys = input_keys - allowed_keys
         if extra_keys:
             raise serializers.ValidationError({key: "Invalid field." for key in extra_keys})
             
-        # 2. Immutable Field: Prevent changing the board after task creation
+        """2. Immutable Field: Prevent changing the board after task creation"""
         if self.instance and 'board' in self.initial_data:
              raise serializers.ValidationError({"board": "Changing the board ID is not allowed."})
              
-        # 3. Membership Validation: Ensure assignee/reviewer are members of the task's board
+        """3. Membership Validation: Ensure assignee/reviewer are members of the task's board"""
         board = self.instance.board if self.instance else data.get('board')
         for field in ['assignee', 'reviewer']:
             user = data.get(field)

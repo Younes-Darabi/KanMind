@@ -20,10 +20,10 @@ class BoardsView(generics.ListCreateAPIView):
          the owner OR a member.
         """
         user = self.request.user
-        # Use Q objects for OR condition: (Owner == User) OR (Member contains User)
+        """Use Q objects for OR condition: (Owner == User) OR (Member contains User)"""
         return Board.objects.filter(
             Q(owner=user) | Q(members=user)
-        ).distinct() # distinct() ensures no duplicates if a user is both owner and member
+        ).distinct() 
 
     def perform_create(self, serializer):
         """

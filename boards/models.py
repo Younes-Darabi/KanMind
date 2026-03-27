@@ -8,10 +8,10 @@ class Board(models.Model):
     """
     title = models.CharField(max_length=30)
     
-    # The user who created the board. If the owner is deleted, the board is removed.
+    """The user who created the board. If the owner is deleted, the board is removed."""
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_boards')
     
-    # A board can have multiple members, and a user can belong to multiple boards.
+    """A board can have multiple members, and a user can belong to multiple boards."""
     members = models.ManyToManyField(User, related_name='boards')
 
     def __str__(self):

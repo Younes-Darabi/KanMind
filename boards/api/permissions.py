@@ -8,7 +8,7 @@ class IsBoardMemberOrOwner(permissions.BasePermission):
     """
     
     def has_object_permission(self, request, view, obj):
-        # Grant access if the user is the owner OR exists in the members list
+        """Grant access if the user is the owner OR exists in the members list"""
         return obj.owner == request.user or obj.members.filter(id=request.user.id).exists()
     
 
@@ -19,5 +19,5 @@ class IsOnlyOwner(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
-        # Only the user who created the board (owner) is authorized
+        """Only the user who created the board (owner) is authorized"""
         return obj.owner == request.user

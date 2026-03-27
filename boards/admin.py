@@ -15,5 +15,5 @@ class BoardAdmin(admin.ModelAdmin):
         """Custom column to show the number of members in the list view."""
         return obj.members.count()
     
-    # Sets the column header name in the Admin panel
+    """Sets the column header name in the Admin panel"""
     get_members_count.short_description = 'Members Count'

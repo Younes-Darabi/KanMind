@@ -23,7 +23,7 @@ class BoardSerializer(serializers.ModelSerializer):
             'tasks_high_prio_count', 'owner_id'
         ]
         extra_kwargs = {
-            'members': {'write_only': True} # Hide member IDs in list view for cleaner output
+            'members': {'write_only': True}
         }
 
     def get_member_count(self, obj):

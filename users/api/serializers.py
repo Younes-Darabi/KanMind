@@ -13,7 +13,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         model = User
         fields = ['fullname', 'email', 'password', 'repeated_password']
         extra_kwargs = {
-            'password': {'write_only': True}, # Ensure password is never included in API responses
+            'password': {'write_only': True},
             'email': {'required': True}
         }
 
@@ -21,12 +21,12 @@ class RegistrationSerializer(serializers.ModelSerializer):
         """
         Validate that the two passwords match and the email is unique.
         """
-        # Check if the password and confirmation password are identical
+        """Check if the password and confirmation password are identical"""
         if attrs['password'] != attrs['repeated_password']:
             raise serializers.ValidationError(
                 {"password": "Passwords do not match!"})
         
-        # Ensure the email address is not already registered in the system
+        """Ensure the email address is not already registered in the system"""
         if User.objects.filter(email=attrs['email']).exists():
             raise serializers.ValidationError(
                 {"email": "Email already exists!"})
@@ -37,10 +37,10 @@ class RegistrationSerializer(serializers.ModelSerializer):
         """
         Create and return a new User instance using the custom UserManager.
         """
-        # Remove the repeated_password as it's not a field in the User model
+        """Remove the repeated_password as it's not a field in the User model"""
         validated_data.pop('repeated_password')
         
-        # Use the create_user method to handle password hashing
+        """Use the create_user method to handle password hashing"""
         user = User.objects.create_user(
             email=validated_data['email'],
             fullname=validated_data['fullname'],
@@ -69,19 +69,19 @@ class CustomAuthTokenSerializer(serializers.Serializer):
         password = attrs.get('password')
 
         if email and password:
-            # Use Django's authenticate method (passing email as the username)
+            """Use Django's authenticate method (passing email as the username)"""
             user = authenticate(request=self.context.get('request'),
                                 username=email, password=password)
             
-            # If authentication fails, raise a validation error
+            """If authentication fails, raise a validation error"""
             if not user:
                 msg = 'Unable to log in with provided credentials.'
                 raise serializers.ValidationError(msg, code='authorization')
         else:
-            # Ensure both fields are present in the request
+            """Ensure both fields are present in the request"""
             msg = 'Must include "email" and "password".'
             raise serializers.ValidationError(msg, code='authorization')
 
-        # Attach the authenticated user object to the validated data
+        """Attach the authenticated user object to the validated data"""
         attrs['user'] = user
         return attrs

@@ -9,12 +9,12 @@ class TaskAdmin(admin.ModelAdmin):
     """
     list_display = ('id', 'title', 'board', 'status', 'priority', 'assignee', 'due_date')
     
-    # Filters in the sidebar for easy project management
+    """Filters in the sidebar for easy project management"""
     list_filter = ('status', 'priority', 'board')
     
     search_fields = ('title', 'description', 'assignee__email', 'creator__email')
     
-    # Make the UI more interactive by allowing status changes directly in the list view
+    """Make the UI more interactive by allowing status changes directly in the list view"""
     list_editable = ('status', 'priority')
 
 
@@ -27,5 +27,5 @@ class CommentAdmin(admin.ModelAdmin):
     list_filter = ('created_at', 'author')
     search_fields = ('content', 'author__email', 'task__title')
     
-    # Comments should usually be read-only in some fields for historical integrity
+    """Comments should usually be read-only in some fields for historical integrity"""
     readonly_fields = ('created_at',)

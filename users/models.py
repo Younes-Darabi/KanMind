@@ -15,13 +15,13 @@ class UserManager(BaseUserManager):
         if not email:
             raise ValueError('The Email field must be set')
         
-        # Standardize the email address (lowercase the domain part)
+        """Standardize the email address (lowercase the domain part)"""
         email = self.normalize_email(email)
 
-        # Create a new user instance
+        """Create a new user instance"""
         user = self.model(email=email, fullname=fullname, **extra_fields)
 
-        # Hash the password before saving
+        """Hash the password before saving"""
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -37,20 +37,20 @@ class User(AbstractUser):
     Custom User model that uses email as the primary login field.
     The default 'username' field is removed.
     """
-    # Remove the default username field
+    """Remove the default username field"""
     username = None
 
-    # Custom fields for our project requirements
+    """Custom fields for our project requirements"""
     fullname = models.CharField(max_length=50)
     email = models.EmailField(max_length=50, unique=True)
 
-    # Assign the custom manager
+    """Assign the custom manager"""
     objects = UserManager()
 
-    # Set email as the unique identifier for logging in
+    """Set email as the unique identifier for logging in"""
     USERNAME_FIELD = 'email'
 
-    # Fields required when creating a user via 'createsuperuser' command
+    """Fields required when creating a user via 'createsuperuser' command"""
     REQUIRED_FIELDS = ['fullname']
 
     def __str__(self):

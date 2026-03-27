@@ -1,4 +1,3 @@
-from django.db.models import Q
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
@@ -22,12 +21,12 @@ class TasksView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
-        # Retrieve board ID from request data to verify access
+        """Retrieve board ID from request data to verify access"""
         board_id = request.data.get('board')
-        board = get_object_or_404(Board, id=board_id) # Return 404 if board doesn't exist
+        board = get_object_or_404(Board, id=board_id)
         
         user = request.user
-        # Strict check: only board owners or members can create tasks
+        """Strict check: only board owners or members can create tasks"""
         if not (board.owner == user or board.members.filter(id=user.id).exists()):
             raise PermissionDenied("Access denied. Board membership required.")
 
@@ -39,7 +38,7 @@ class TasksView(generics.ListCreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer, board):
-        # Automatically assign the current user as the task creator
+        """Automatically assign the current user as the task creator"""
         serializer.save(creator=self.request.user, board=board)
 
 
@@ -62,7 +61,7 @@ class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
         return [IsAuthenticated(), IsBoardMember()]
 
     def patch(self, request, *args, **kwargs):
-        # partial_update allows updating only specific fields
+        """partial_update allows updating only specific fields"""
         return super().partial_update(request, *args, **kwargs)
 
 
@@ -93,7 +92,7 @@ class CommentListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        # Fetch the task and verify board membership before listing comments
+        """Fetch the task and verify board membership before listing comments"""
         task_id = self.kwargs.get('task_id')
         task = get_object_or_404(Task, id=task_id)
 
@@ -103,14 +102,14 @@ class CommentListCreateView(generics.ListCreateAPIView):
         return Comment.objects.filter(task=task).order_by('created_at')
 
     def perform_create(self, serializer):
-        # Ensure the task exists and the user is authorized before saving a comment
+        """Ensure the task exists and the user is authorized before saving a comment"""
         task = get_object_or_404(Task, id=self.kwargs.get('task_id'))
         user = self.request.user
         
         if not (task.board.owner == user or task.board.members.filter(id=user.id).exists()):
             raise PermissionDenied("Access denied. Board membership required.")
         
-        # Validate that comment content is not just whitespace
+        """Validate that comment content is not just whitespace"""
         if not self.request.data.get('content'):
             raise serializers.ValidationError({"content": "Content cannot be empty."})
             
@@ -128,11 +127,11 @@ class CommentDetailView(generics.DestroyAPIView):
     lookup_url_kwarg = 'comment_id'
 
     def get_object(self):
-        # Verify both task and comment exist and are related
+        """Verify both task and comment exist and are related"""
         task_id = self.kwargs.get('task_id')
         comment_id = self.kwargs.get('comment_id')
         comment = get_object_or_404(Comment, id=comment_id, task_id=task_id)
         
-        # Manually trigger object-level permission checks (IsCommentAuthor)
+        """Manually trigger object-level permission checks (IsCommentAuthor)"""
         self.check_object_permissions(self.request, comment)
         return comment
