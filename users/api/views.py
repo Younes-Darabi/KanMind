@@ -68,7 +68,7 @@ class RegistrationView(APIView):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             """General exception handling for server-side errors"""
-            return Response(
+            return ResponseResponse(
                 {"error": "Internal Server Error"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
